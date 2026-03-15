@@ -1,0 +1,15 @@
+{
+  "name": "b2-bomber-multiplayer",
+  "version": "1.0.0",
+  "description": "B2 bomber game with user auth and persistent scores",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "sqlite3": "^5.1.7"
+  }
+}
