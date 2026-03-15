@@ -1,13 +1,18 @@
-const path = require('path');
+const path = require('node:path');
+const fs = require('node:fs');
 const express = require('express');
 const session = require('express-session');
+const SQLiteStoreFactory = require('connect-sqlite3');
 const bcrypt = require('bcryptjs');
 const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const dbPath = path.join(__dirname, 'game.db');
+const dataDir = process.env.DATA_DIR || path.join(__dirname, 'data');
+fs.mkdirSync(dataDir, { recursive: true });
+
+const dbPath = process.env.DB_PATH || path.join(dataDir, 'game.db');
 const db = new sqlite3.Database(dbPath);
 
 db.serialize(() => {
@@ -56,7 +61,13 @@ db.serialize(() => {
 });
 
 app.use(express.json());
+app.use(express.static(__dirname));
+const SQLiteStore = SQLiteStoreFactory(session);
 app.use(session({
+  store: new SQLiteStore({
+    db: process.env.SESSION_DB_FILE || 'sessions.db',
+    dir: dataDir
+  }),
   secret: process.env.SESSION_SECRET || 'change-this-secret-in-production',
   resave: false,
   saveUninitialized: false,
@@ -125,7 +136,7 @@ app.post('/api/register', async (req, res) => {
         );
       }
     );
-  } catch (e) {
+  } catch {
     return res.status(500).json({ error: 'Server error.' });
   }
 });
@@ -215,8 +226,6 @@ app.get('/api/leaderboard', (req, res) => {
     }
   );
 });
-
-app.use(express.static(__dirname));
 
 app.get('*', (_req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

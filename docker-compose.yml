@@ -6,9 +6,10 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
+      - DATA_DIR=/app/data
       - SESSION_SECRET=change-this-to-a-strong-secret
     volumes:
-      - db-data:/app
+      - db-data:/app/data
     restart: unless-stopped
 
 volumes:
