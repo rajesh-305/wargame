@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    container_name: b2-bomber
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - SESSION_SECRET=change-this-to-a-strong-secret
+    volumes:
+      - db-data:/app
+    restart: unless-stopped
+
+volumes:
+  db-data:
